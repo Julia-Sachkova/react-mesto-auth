@@ -1,0 +1,4 @@
+.popup__submit-button_delete-confirm {
+    margin: 38px 36px 36px;
+    width: calc(100% - 72px);
+}

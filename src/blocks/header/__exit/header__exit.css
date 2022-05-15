@@ -1,0 +1,11 @@
+.header__exit {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.22;
+    text-align: right;
+    color: #A9A9A9;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}

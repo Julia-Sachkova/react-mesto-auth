@@ -1,0 +1,11 @@
+.popup__close-button_photo-zoom {
+    top: -40px;
+    right: -40px;
+}
+
+@media screen and (max-width: 544px) {
+    .popup__close-button_photo-zoom {
+        top: -36px;
+        right: 0;
+    }
+}
