@@ -1,6 +1,5 @@
 import React from 'react';
 import { withRouter, Link } from 'react-router-dom';
-import * as auth from '../auth.js';
 
 function Register(props) {
     const [email, setEmail] = React.useState('');
@@ -22,15 +21,6 @@ function Register(props) {
         }
 
         props.onSubmit(email, password);
-
-        // auth.register(email, password)
-        //     .then((data) => {
-        //         setEmail('');
-        //         setPassword('');
-        //         props.handleLogin();
-        //         props.history.push('/sign-in');
-        //     })
-        //     .catch(err => console.log(err));
     }
 
     return (

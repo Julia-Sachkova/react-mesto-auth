@@ -12,34 +12,38 @@ import AddPlacePopup from './AddPlacePopup';
 import Login from './Login';
 import Register from './Register';
 import ProtectedRoute from './ProtectedRoute';
-import * as auth from '../auth.js';
+import * as auth from '../utils/auth.js';
 import InfoTooltip from './InfoTooltip';
+import InfoTooltipLogin from './InfoTooltipLogin';
 
 function App() {
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isInfoPopupOpen, setInfoPopupOpen] = React.useState(false);
+  const [isInfoLoginPopupOpen, setInfoLoginPopupOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(null);
   const [currentUser, setCurrentUser] = React.useState({ name: '', about: '', avatar: '' });
   const [cards, setCards] = React.useState([]);
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [isReg, setIsReg] = React.useState(false);
-  const history = useHistory();
   const [email, setEmail] = React.useState('');
+  const history = useHistory();
 
   React.useEffect(() => {
     handleTokenCheck();
 
-    Promise.all([api.getUserInfoApi(), api.getCards()])
-      .then(([userData, cardData]) => {
-        setCurrentUser(userData);
-        setCards(cardData);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    if (loggedIn) {
+      Promise.all([api.getUserInfoApi(), api.getCards()])
+        .then(([userData, cardData]) => {
+          setCurrentUser(userData);
+          setCards(cardData);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [loggedIn]);
 
   function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
@@ -85,6 +89,7 @@ function App() {
     setEditProfilePopupOpen(false);
     setEditAvatarPopupOpen(false);
     setInfoPopupOpen(false);
+    setInfoLoginPopupOpen(false);
     setSelectedCard(null);
   }
 
@@ -153,7 +158,10 @@ function App() {
         handleLogin();
         history.push('/');
       })
-      .catch(err => console.log(err));
+      .catch((err) => {
+        setInfoLoginPopupOpen(true);
+        console.log(err)
+      });
   }
 
   function handleExit() {
@@ -213,6 +221,15 @@ function App() {
           isOPen={isInfoPopupOpen}
           onClose={closeAllPopups}
           isReg={isReg}
+          okText='Вы успешно зарегистрировались!'
+          errText='Что-то пошло не так! Попробуйте ещё раз.'
+        />
+
+        <InfoTooltipLogin
+          isOPen={isInfoLoginPopupOpen}
+          onClose={closeAllPopups}
+          isLog={loggedIn}
+          errText='Что-то пошло не так! Попробуйте ещё раз.'
         />
 
         {loggedIn && <Footer />}
