@@ -45,14 +45,14 @@
 @import url(./blocks/popup/__submit-button/popup__submit-button.css);
 @import url(./blocks/popup/__submit-button/_type/popup__submit-button_type_error.css);
 @import url(./blocks/popup/__form/popup__form.css);
-@import url(./blocks/popup/__form-confirm-delete/popup__form-confirm-delete.css);
+@import url(./blocks/popup/__delete-confirm/popup__delete-confirm.css);
 @import url(./blocks/popup/__close-button/popup__close-button.css);
 @import url(./blocks/popup/_photo-zoom/popup_photo-zoom.css);
 @import url(./blocks/popup/__container-zoom/popup__container-zoom.css);
 @import url(./blocks/popup/__image/popup__image.css);
 @import url(./blocks/popup/__photo-name/popup__photo-name.css);
 @import url(./blocks/popup/__close-button/_photo-zoom/popup__close-button_photo-zoom.css);
-@import url(./blocks/popup/__submit-button_delete-confirm/popup__submit-button_delete-confirm.css);
+@import url(./blocks/popup/__submit-button/_delete-confirm/popup__submit-button_delete-confirm.css);
 @import url(./blocks/popup/__info-icon/popup__info-icon.css);
 @import url(./blocks/popup/__info-text/popup__info-text.css);
 @import url(./blocks/authorization/authorization.css);

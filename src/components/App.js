@@ -15,6 +15,7 @@ import ProtectedRoute from './ProtectedRoute';
 import * as auth from '../utils/auth.js';
 import InfoTooltip from './InfoTooltip';
 import InfoTooltipLogin from './InfoTooltipLogin';
+import PopupWithDelete from './PopupWithDelete';
 
 function App() {
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
@@ -22,13 +23,21 @@ function App() {
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isInfoPopupOpen, setInfoPopupOpen] = React.useState(false);
   const [isInfoLoginPopupOpen, setInfoLoginPopupOpen] = React.useState(false);
+  const [isPopupWithDeleteOpen, setPopupWithDeleteOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(null);
+  const [deleteCard, setDeleteCard] = React.useState(null);
   const [currentUser, setCurrentUser] = React.useState({ name: '', about: '', avatar: '' });
   const [cards, setCards] = React.useState([]);
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [isReg, setIsReg] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const history = useHistory();
+
+  function handleCardDelete(card) {
+    setDeleteCard(card);
+
+    handleDeletePopupClick();
+  }
 
   React.useEffect(() => {
     handleTokenCheck();
@@ -57,15 +66,8 @@ function App() {
       });
   }
 
-  function handleCardDelete(card) {
-    api.deleteUserCard(card._id)
-      .then(() => {
-        const newCards = cards.filter((c) => c._id !== card._id);
-        setCards(newCards);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  function handleDeletePopupClick() {
+    setPopupWithDeleteOpen(true);
   }
 
   function handleCardClick(cardItem) {
@@ -84,13 +86,31 @@ function App() {
     setAddPlacePopupOpen(true);
   }
 
+  function handleDeletePopupClick() {
+    setPopupWithDeleteOpen(true);
+  }
+
   function closeAllPopups() {
     setAddPlacePopupOpen(false);
     setEditProfilePopupOpen(false);
     setEditAvatarPopupOpen(false);
     setInfoPopupOpen(false);
     setInfoLoginPopupOpen(false);
+    setPopupWithDeleteOpen(false);
     setSelectedCard(null);
+    setDeleteCard(null);
+  }
+
+  function handleConfirmDeleteCard() {
+    api.deleteUserCard(deleteCard._id)
+      .then(() => {
+        const newCards = cards.filter((c) => c._id !== deleteCard._id);
+        setCards(newCards);
+        closeAllPopups();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   function handleUpdateUser(user) {
@@ -252,6 +272,12 @@ function App() {
         <ImagePopup
           card={selectedCard}
           onClose={closeAllPopups}
+        />
+
+        <PopupWithDelete
+          isOpen={isPopupWithDeleteOpen}
+          onClose={closeAllPopups}
+          onDelete={handleConfirmDeleteCard}
         />
 
       </CurrentUserContext.Provider>

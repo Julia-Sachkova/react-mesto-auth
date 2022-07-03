@@ -1,4 +1,8 @@
-export const BASE_URL = 'https://auth.nomoreparties.co';
+export const BASE_URL = 'https://api.mesto.julia.practicum.nomoreparties.sbs';
+
+const checkResOk = (res) => {
+    res.ok ? res.json() : Promise.reject(`Ошибка ${res.status}`);
+};
 
 export const register = (email, password) => {
     return fetch(`${BASE_URL}/signup`, {
@@ -12,12 +16,7 @@ export const register = (email, password) => {
             "password": password
         })
     })
-        .then((res) => {
-            if (res.ok) {
-                return res.json();
-            }
-        })
-        .catch((err) => console.log(err));
+        .then(checkResOk);
 };
 
 export const authorize = (email, password) => {
@@ -32,29 +31,17 @@ export const authorize = (email, password) => {
             "password": password
         })
     })
-        .then((res) => {
-            if (res.ok) {
-                return res.json();
-            }
-        })
-        .then((data) => {
-            if (data.token) {
-                localStorage.setItem('jwt', data.token);
-                return data;
-            }
-        })
-        .catch(err => console.log(err))
+        .then(checkResOk);
 };
 
-export const checkToken = (token) => {
+export const checkToken = (jwt) => {
     return fetch(`${BASE_URL}/users/me`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `${jwt}`,
         }
     })
-        .then(res => res.json())
-        .then(data => data)
+        .then(checkResOk);
 }
