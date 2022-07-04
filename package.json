@@ -18,7 +18,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && scp -r ./build/* julia-rulova@84.201.172.240:/home/julia-rulova/react-mesto-api-full/frontend"
+    "deploy": "npm run build && scp -r ./build/* julia-rulova@51.250.86.255:/home/julia-rulova/react-mesto-api-full/frontend"
   },
   "eslintConfig": {
     "extends": [
