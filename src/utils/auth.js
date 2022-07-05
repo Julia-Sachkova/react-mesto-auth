@@ -36,13 +36,11 @@ export const authorize = (email, password) => {
         .then(checkResOk);
 };
 
-export const checkToken = (jwt) => {
+export const checkToken = () => {
     return fetch(`${BASE_URL}/users/me`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwt}`,
         },
         credentials: 'include'
     })
