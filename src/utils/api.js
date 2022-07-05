@@ -1,7 +1,8 @@
 class Api {
-    constructor({ baseUrl, headers }) {
+    constructor({ baseUrl, headers, credentials }) {
         this._url = baseUrl;
         this._headers = headers;
+        this._credentials = credentials;
     }
 
     _checkResOk(res) {
@@ -14,7 +15,8 @@ class Api {
     getUserInfoApi() {
         return fetch(`${this._url}/users/me`, {
             method: 'GET',
-            headers: this._headers
+            headers: this._headers,
+            credentials: this._credentials
         })
             .then(this._checkResOk);
     }
@@ -22,7 +24,8 @@ class Api {
     getCards() {
         return fetch(`${this._url}/cards`, {
             method: 'GET',
-            headers: this._headers
+            headers: this._headers,
+            credentials: this._credentials
         })
             .then(this._checkResOk);
     }
@@ -31,6 +34,7 @@ class Api {
         return fetch(`${this._url}/users/me`, {
             method: 'PATCH',
             headers: this._headers,
+            credentials: this._credentials,
             body: JSON.stringify({
                 name: userData.name,
                 about: userData.about
@@ -43,6 +47,7 @@ class Api {
         return fetch(`${this._url}/cards`, {
             method: 'POST',
             headers: this._headers,
+            credentials: this._credentials,
             body: JSON.stringify({
                 name: cardItem.name,
                 link: cardItem.link
@@ -54,7 +59,8 @@ class Api {
     cardLike(id) {
         return fetch(`${this._url}/cards/${id}/likes`, {
             method: 'PUT',
-            headers: this._headers
+            headers: this._headers,
+            credentials: this._credentials
         })
             .then(this._checkResOk);
     }
@@ -62,7 +68,8 @@ class Api {
     cardDislike(id) {
         return fetch(`${this._url}/cards/${id}/likes`, {
             method: 'DELETE',
-            headers: this._headers
+            headers: this._headers,
+            credentials: this._credentials
         })
             .then(this._checkResOk);
     }
@@ -70,7 +77,8 @@ class Api {
     changeLikeCardStatus(id, isLiked) {
         return fetch(`${this._url}/cards/${id}/likes`, {
             method: `${isLiked ? 'PUT' : 'DELETE'}`,
-            headers: this._headers
+            headers: this._headers,
+            credentials: this._credentials
         })
             .then(this._checkResOk);
     }
@@ -78,7 +86,8 @@ class Api {
     deleteUserCard(id) {
         return fetch(`${this._url}/cards/${id}`, {
             method: 'DELETE',
-            headers: this._headers
+            headers: this._headers,
+            credentials: this._credentials
         })
             .then(this._checkResOk);
     }
@@ -87,6 +96,7 @@ class Api {
         return fetch(`${this._url}/users/me/avatar`, {
             method: 'PATCH',
             headers: this._headers,
+            credentials: this._credentials,
             body: JSON.stringify({
                 avatar: userData.avatar
             })
@@ -99,7 +109,8 @@ const api = new Api({
     baseUrl: 'https://api.mesto.julia.practicum.nomoreparties.sbs',
     headers: {
         'Content-Type': 'application/json'
-    }
+    },
+    credentials: 'include'
 });
 
 export default api;

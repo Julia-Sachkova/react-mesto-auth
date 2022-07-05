@@ -11,6 +11,7 @@ export const register = (email, password) => {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
             "email": email,
             "password": password
@@ -26,6 +27,7 @@ export const authorize = (email, password) => {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
             "email": email,
             "password": password
@@ -41,7 +43,8 @@ export const checkToken = (jwt) => {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwt}`,
-        }
+        },
+        credentials: 'include'
     })
         .then(checkResOk);
 }
