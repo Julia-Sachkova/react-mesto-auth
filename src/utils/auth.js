@@ -46,5 +46,6 @@ export const checkToken = (token) => {
         },
         credentials: 'include'
     })
-        .then(checkResOk);
+        .then(checkResOk)
+        .then(data => data);
 }
