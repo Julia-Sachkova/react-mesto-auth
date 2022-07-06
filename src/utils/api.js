@@ -2,13 +2,7 @@ class Api {
     constructor({ baseUrl, headers, credentials }) {
         this._url = baseUrl;
         this._credentials = credentials;
-    }
-
-    get _headers() {
-        return {
-            'Content-Type': 'application/json',
-            authorization: `Bearer ${localStorage.getItem('token')}`,
-        }
+        this._headers = headers;
     }
 
     _checkResOk(res) {
@@ -114,7 +108,6 @@ class Api {
 const api = new Api({
     baseUrl: 'https://api.mesto.julia.practicum.nomoreparties.sbs',
     headers: {
-        'authorization': `Bearer ${localStorage.getItem('token')}`,
         'Content-Type': 'application/json'
     },
     credentials: 'include'
