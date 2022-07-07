@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import api from '../utils/api';
@@ -40,8 +40,6 @@ function App() {
   }
 
   React.useEffect(() => {
-    handleTokenCheck();
-
     if (loggedIn) {
       Promise.all([api.getUserInfoApi(), api.getCards()])
         .then(([userData, cardData]) => {
@@ -51,8 +49,24 @@ function App() {
         .catch((err) => {
           console.log(err);
         });
+    } else {
+      return;
     }
   }, [loggedIn]);
+
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      const token = localStorage.getItem('token')
+      auth.checkToken(token)
+        .then((res) => {
+          if (res) {
+            handleLogin();
+            history.push('/');
+            setEmail(res.data.email);
+          }
+        })
+    }
+  });
 
   function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
@@ -84,10 +98,6 @@ function App() {
 
   function handleAddPlaceClick() {
     setAddPlacePopupOpen(true);
-  }
-
-  function handleDeletePopupClick() {
-    setPopupWithDeleteOpen(true);
   }
 
   function closeAllPopups() {
@@ -173,10 +183,11 @@ function App() {
   function handleLoginSubmit(email, password) {
     auth.authorize(email, password)
       .then((data) => {
-        localStorage.setItem("jwt", data.token);
-        setEmail(email);
-        handleLogin();
-        history.push('/');
+        if (data.token) {
+          setEmail(email);
+          handleLogin();
+          history.push('/');
+        }
       })
       .catch((err) => {
         setInfoLoginPopupOpen(true);
@@ -185,21 +196,8 @@ function App() {
   }
 
   function handleExit() {
-    localStorage.removeItem("jwt");
     setLoggedIn(false);
     history.push('/sign-in');
-  }
-
-  function handleTokenCheck() {
-    const jwt = localStorage.getItem('jwt');
-    if (jwt) {
-      auth.checkToken(jwt)
-        .then((res) => {
-          handleLogin();
-          history.push('/');
-          setEmail(res.data.email);
-        })
-    }
   }
 
   return (
