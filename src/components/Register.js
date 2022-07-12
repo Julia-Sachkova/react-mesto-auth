@@ -48,7 +48,7 @@ function Register(props) {
                     onChange={handleChangePassword} />
                 <span className="popup__text-error password-input-error"></span>
                 <button type="submit" onSubmit={handleSubmit} className="authorization__button">Зарегистрироваться</button>
-                <Link className="authorization__text" to="/sign-in">Уже зарегистрированы? Войти</Link>
+                <Link className="authorization__text" to="/signin">Уже зарегистрированы? Войти</Link>
             </form>
         </div>
     )

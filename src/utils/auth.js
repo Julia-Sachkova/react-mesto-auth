@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://api.mesto.julia.practicum.nomoreparties.sbs';
+export const BASE_URL = 'http://localhost:3000';
 
 const checkResOk = (res) => {
     res.ok ? res.json() : Promise.reject(`Ошибка ${res.status}`);
@@ -11,27 +11,24 @@ export const register = (email, password) => {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        credentials: 'include',
+        // credentials: 'include',
         body: JSON.stringify({
-            "email": email,
-            "password": password
+            email,
+            password
         })
     })
         .then(checkResOk);
 };
 
-export const authorize = (email, password) => {
+export const authorization = (email, password) => {
     return fetch(`${BASE_URL}/signin`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        credentials: 'include',
-        body: JSON.stringify({
-            "email": email,
-            "password": password
-        })
+        // credentials: 'include',
+        body: JSON.stringify({ email, password })
     })
         .then(checkResOk);
 };
@@ -42,9 +39,9 @@ export const checkToken = (token) => {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            "Authorization": `Bearer ${token}`
         },
-        credentials: 'include'
+        // credentials: 'include'
     })
         .then(checkResOk)
         .then(data => data);

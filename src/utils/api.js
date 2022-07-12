@@ -106,11 +106,11 @@ class Api {
 }
 
 const api = new Api({
-    baseUrl: 'http://api.mesto.julia.practicum.nomoreparties.sbs',
+    baseUrl: 'http://localhost:3000',
     headers: {
         'Content-Type': 'application/json'
     },
-    credentials: 'include'
+    // credentials: 'include'
 });
 
 export default api;

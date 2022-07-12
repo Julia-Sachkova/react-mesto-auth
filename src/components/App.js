@@ -33,13 +33,25 @@ function App() {
   const [email, setEmail] = React.useState('');
   const history = useHistory();
 
-  function handleCardDelete(card) {
-    setDeleteCard(card);
-
-    handleDeletePopupClick();
+  function handleTokenCheck() {
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      auth.checkToken(jwt)
+        .then((res) => {
+          handleLogin();
+          history.push('/');
+          setEmail(res.data.email);
+        })
+    }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
+    handleTokenCheck();
+  }, []);
+
+  useEffect(() => {
+    // handleTokenCheck();
+
     if (loggedIn) {
       Promise.all([api.getUserInfoApi(), api.getCards()])
         .then(([userData, cardData]) => {
@@ -49,24 +61,13 @@ function App() {
         .catch((err) => {
           console.log(err);
         });
-    } else {
-      return;
     }
   }, [loggedIn]);
 
-  useEffect(() => {
-    if (localStorage.getItem('token')) {
-      const token = localStorage.getItem('token')
-      auth.checkToken(token)
-        .then((res) => {
-          if (res) {
-            handleLogin();
-            history.push('/');
-            setEmail(res.data.email);
-          }
-        })
-    }
-  });
+  function handleCardDelete(card) {
+    setDeleteCard(card);
+    handleDeletePopupClick();
+  }
 
   function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
@@ -166,12 +167,31 @@ function App() {
     setLoggedIn(true);
   }
 
+  function handleLoginSubmit(email, password) {
+    auth.authorization(email, password)
+      .then((res) => {
+        if (res) {
+          localStorage.setItem('jwt', res.token);
+          setEmail(email);
+          handleLogin();
+          history.push('/')
+        }
+      })
+      .catch((err) => {
+        setInfoLoginPopupOpen(true);
+        console.log(err)
+      });
+
+  }
+
   function handleRegistrSubmit(email, password) {
     auth.register(email, password)
       .then((data) => {
-        setInfoPopupOpen(true);
-        setIsReg(true);
-        history.push('/sign-in');
+        if (data) {
+          setInfoPopupOpen(true);
+          setIsReg(true);
+          history.push('/signin');
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -180,24 +200,9 @@ function App() {
       });
   }
 
-  function handleLoginSubmit(email, password) {
-    auth.authorize(email, password)
-      .then((data) => {
-        if (data.token) {
-          setEmail(email);
-          handleLogin();
-          history.push('/');
-        }
-      })
-      .catch((err) => {
-        setInfoLoginPopupOpen(true);
-        console.log(err)
-      });
-  }
-
   function handleExit() {
     setLoggedIn(false);
-    history.push('/sign-in');
+    history.push('/signin');
   }
 
   return (
@@ -220,14 +225,14 @@ function App() {
             onCardDelete={handleCardDelete}
           />
 
-          <Route path="/sign-in">
+          <Route path="/signin">
             <Login
               handleLogin={handleLogin}
               onSubmit={handleLoginSubmit}
             />
           </Route>
 
-          <Route path="/sign-up">
+          <Route path="/signup">
             <Register
               handleLogin={handleLogin}
               onSubmit={handleRegistrSubmit}
