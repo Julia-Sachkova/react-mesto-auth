@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:3000';
+export const BASE_URL = 'http://api.mesto.julia.practicum.nomoreparties.sbs';
 
 const checkResOk = (res) => {
     res.ok ? res.json() : Promise.reject(`Ошибка ${res.status}`);
