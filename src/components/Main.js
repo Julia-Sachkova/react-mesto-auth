@@ -2,7 +2,7 @@ import React from "react";
 import Card from "./Card";
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function Main(props) {
+function Main({ cards, avatar, onEditAvatar, onEditProfile, onAddPlace, onCardClick, onCardLike, onCardDelete }) {
     const currentUser = React.useContext(CurrentUserContext);
 
     return (
@@ -11,14 +11,14 @@ function Main(props) {
                 <div className="profile__user">
                     <div className="profile__avatar-sector">
                         <img className="profile__avatar"
-                            src={currentUser.avatar}
+                            src={avatar}
                             alt="аватарка."
                         />
                         <button
                             type="button"
                             aria-label="редактирование аватара."
                             className="profile__avatar-change-btn"
-                            onClick={props.onEditAvatar}
+                            onClick={onEditAvatar}
                         />
                     </div>
                     <div className="profile__info">
@@ -28,7 +28,7 @@ function Main(props) {
                                 type="button"
                                 aria-label="редактирование профиля."
                                 className="profile__edit-button"
-                                onClick={props.onEditProfile}
+                                onClick={onEditProfile}
                             />
                         </div>
                         <p className="profile__about">{currentUser.about}</p>
@@ -38,19 +38,19 @@ function Main(props) {
                     type="button"
                     aria-label="добавление новой фотокарточки."
                     className="profile__add-button"
-                    onClick={props.onAddPlace}
+                    onClick={onAddPlace}
                 />
             </section>
 
             <section>
                 <ul className="cards">
-                    {props.cards.map((card) => (
+                    {cards.map((card) => (
                         <Card
                             card={card}
                             key={card._id}
-                            onCardClick={props.onCardClick}
-                            onCardLike={props.onCardLike}
-                            onCardDelete={props.onCardDelete}
+                            onCardClick={onCardClick}
+                            onCardLike={onCardLike}
+                            onCardDelete={onCardDelete}
                         />
                     ))}
                 </ul>

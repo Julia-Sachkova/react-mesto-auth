@@ -1,7 +1,14 @@
 export const BASE_URL = 'http://api.mesto.julia.practicum.nomoreparties.sbs';
 
-const checkResOk = (res) => {
-    res.ok ? res.json() : Promise.reject(`Ошибка ${res.status}`);
+// const checkResOk = (res) => {
+//     res.ok ? res.json() : Promise.reject(`Ошибка ${res.status}`);
+// };
+
+function checkResOk(res) {
+    if (res.ok) {
+        return res.json();
+    }
+    return Promise.reject(`Ошибка ${res.status}`);
 };
 
 export const register = (email, password) => {
@@ -13,8 +20,8 @@ export const register = (email, password) => {
         },
         // credentials: 'include',
         body: JSON.stringify({
-            email,
-            password
+            'email': email,
+            'password': password
         })
     })
         .then(checkResOk);
@@ -28,7 +35,10 @@ export const authorization = (email, password) => {
             'Content-Type': 'application/json'
         },
         // credentials: 'include',
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({
+            'email': email,
+            'password': password
+        })
     })
         .then(checkResOk);
 };
@@ -43,6 +53,5 @@ export const checkToken = (token) => {
         },
         // credentials: 'include'
     })
-        .then(checkResOk)
-        .then(data => data);
+        .then(checkResOk);
 }

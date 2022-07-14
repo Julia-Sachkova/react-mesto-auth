@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import api from '../utils/api';
@@ -18,19 +18,19 @@ import InfoTooltipLogin from './InfoTooltipLogin';
 import PopupWithDelete from './PopupWithDelete';
 
 function App() {
-  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
-  const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
-  const [isInfoPopupOpen, setInfoPopupOpen] = React.useState(false);
-  const [isInfoLoginPopupOpen, setInfoLoginPopupOpen] = React.useState(false);
-  const [isPopupWithDeleteOpen, setPopupWithDeleteOpen] = React.useState(false);
-  const [selectedCard, setSelectedCard] = React.useState(null);
-  const [deleteCard, setDeleteCard] = React.useState(null);
-  const [currentUser, setCurrentUser] = React.useState({ name: '', about: '', avatar: '' });
-  const [cards, setCards] = React.useState([]);
-  const [loggedIn, setLoggedIn] = React.useState(false);
-  const [isReg, setIsReg] = React.useState(false);
-  const [email, setEmail] = React.useState('');
+  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
+  const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
+  const [isInfoPopupOpen, setInfoPopupOpen] = useState(false);
+  const [isInfoLoginPopupOpen, setInfoLoginPopupOpen] = useState(false);
+  const [isPopupWithDeleteOpen, setPopupWithDeleteOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [deleteCard, setDeleteCard] = useState(null);
+  const [currentUser, setCurrentUser] = useState({ name: '', about: '', avatar: '' });
+  const [cards, setCards] = useState([]);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [isReg, setIsReg] = useState(false);
+  const [email, setEmail] = useState('');
   const history = useHistory();
 
   function handleTokenCheck() {
@@ -40,7 +40,7 @@ function App() {
         .then((res) => {
           handleLogin();
           history.push('/');
-          setEmail(res.data.email);
+          setEmail(res.email);
         })
     }
   }
@@ -56,6 +56,7 @@ function App() {
       Promise.all([api.getUserInfoApi(), api.getCards()])
         .then(([userData, cardData]) => {
           setCurrentUser(userData);
+          console.log(userData);
           setCards(cardData);
         })
         .catch((err) => {
@@ -127,7 +128,12 @@ function App() {
   function handleUpdateUser(user) {
     api.editUserInfo(user)
       .then((data) => {
-        setCurrentUser(data);
+        setCurrentUser({
+          name: data.name,
+          about: data.about
+        });
+        console.log(data);
+        console.log(user);
       })
       .catch((err) => {
         console.log(err);
@@ -140,7 +146,10 @@ function App() {
   function handleUpdateAvatar(user) {
     api.editAvatar(user)
       .then((dataAvatar) => {
-        setCurrentUser(dataAvatar);
+        setCurrentUser({
+          ...currentUser,
+          avatar: dataAvatar.avatar
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -170,28 +179,23 @@ function App() {
   function handleLoginSubmit(email, password) {
     auth.authorization(email, password)
       .then((res) => {
-        if (res) {
-          localStorage.setItem('jwt', res.token);
-          setEmail(email);
-          handleLogin();
-          history.push('/')
-        }
+        localStorage.setItem('jwt', res.token);
+        setEmail(email);
+        handleLogin();
+        history.push('/');
       })
       .catch((err) => {
         setInfoLoginPopupOpen(true);
         console.log(err)
       });
-
   }
 
   function handleRegistrSubmit(email, password) {
-    auth.register(email, password)
+    return auth.register(email, password)
       .then((data) => {
-        if (data) {
-          setInfoPopupOpen(true);
-          setIsReg(true);
-          history.push('/signin');
-        }
+        setInfoPopupOpen(true);
+        setIsReg(true);
+        history.push('/signin');
       })
       .catch((err) => {
         console.log(err);
@@ -201,6 +205,7 @@ function App() {
   }
 
   function handleExit() {
+    localStorage.removeItem('jwt');
     setLoggedIn(false);
     history.push('/signin');
   }
