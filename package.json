@@ -1,16 +1,15 @@
 {
-  "name": "react-mesto-auth",
+  "name": "mesto",
+  "homepage": "./",
   "version": "0.1.0",
   "private": true,
-  "homepage": "./",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.2.0",
+    "@testing-library/react": "^13.1.0",
     "@testing-library/user-event": "^13.5.0",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^5.2.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^5.2.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -19,7 +18,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && scp -r ./build/* julia-rulova@51.250.86.255:/home/julia-rulova/react-mesto-api-full/frontend"
+    "predeploy": "npm run build && scp -r ./build/* julia-rulova@51.250.86.255:/home/julia-rulova/react-mesto-api-full/frontend",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -38,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3"
   }
 }

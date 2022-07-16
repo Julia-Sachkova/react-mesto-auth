@@ -1,57 +1,54 @@
-export const BASE_URL = 'http://api.mesto.julia.practicum.nomoreparties.sbs';
-
-// const checkResOk = (res) => {
-//     res.ok ? res.json() : Promise.reject(`Ошибка ${res.status}`);
-// };
+export const base_Url = 'https://api.mesto.julia.practicum.nomoreparties.sbs';
 
 function checkResOk(res) {
     if (res.ok) {
         return res.json();
     }
-    return Promise.reject(`Ошибка ${res.status}`);
+    return Promise.reject(`Ошибка: ${res.status}`);
 };
 
 export const register = (email, password) => {
-    return fetch(`${BASE_URL}/signup`, {
-        method: 'POST',
+    return fetch(`${base_Url}/signup`, {
+        method: "POST",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            "Accept": "application/json",
+            "Content-Type": "application/json"
         },
-        // credentials: 'include',
         body: JSON.stringify({
-            'email': email,
-            'password': password
+            email,
+            password
         })
     })
-        .then(checkResOk);
+        .then(checkResOk)
 };
 
+
 export const authorization = (email, password) => {
-    return fetch(`${BASE_URL}/signin`, {
-        method: 'POST',
+    return fetch(`${base_Url}/signin`, {
+        method: "POST",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            "Accept": "application/json",
+            "Content-Type": "application/json"
         },
-        // credentials: 'include',
         body: JSON.stringify({
-            'email': email,
-            'password': password
+            email,
+            password
         })
     })
-        .then(checkResOk);
+        .then(checkResOk)
+
 };
 
 export const checkToken = (token) => {
-    return fetch(`${BASE_URL}/users/me`, {
-        method: 'GET',
+    return fetch(`${base_Url}/users/me`, {
+        method: "GET",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            "Accept": "application/json",
+            "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
         },
-        // credentials: 'include'
     })
-        .then(checkResOk);
-}
+        .then(checkResOk)
+};
+
+

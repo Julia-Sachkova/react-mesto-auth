@@ -1,35 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import api from '../utils/api';
+
 import Header from './Header';
-import Main from './Main';
 import Footer from './Footer';
+import Main from './Main';
+import Register from './Register';
+import Login from './Login';
 import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
-import Login from './Login';
-import Register from './Register';
-import ProtectedRoute from './ProtectedRoute';
-import * as auth from '../utils/auth.js';
+import PopupWithDelete from './PopupWithDelete';
 import InfoTooltip from './InfoTooltip';
 import InfoTooltipLogin from './InfoTooltipLogin';
-import PopupWithDelete from './PopupWithDelete';
+import * as auth from './../utils/auth';
+import { api } from './../utils/Api';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import ProtectedRoute from './ProtectedRoute';
 
-function App() {
-  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
+
+export default function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
-  const [isInfoPopupOpen, setInfoPopupOpen] = useState(false);
-  const [isInfoLoginPopupOpen, setInfoLoginPopupOpen] = useState(false);
   const [isPopupWithDeleteOpen, setPopupWithDeleteOpen] = useState(false);
+  const [isInfoLoginPopupOpen, setInfoLoginPopupOpen] = useState(false);
+  const [isInfoPopupOpen, setInfoPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [deleteCard, setDeleteCard] = useState(null);
-  const [currentUser, setCurrentUser] = useState({ name: '', about: '', avatar: '' });
+  const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
-  const [loggedIn, setLoggedIn] = useState(false);
   const [isReg, setIsReg] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState('');
   const history = useHistory();
 
@@ -38,9 +40,13 @@ function App() {
     if (jwt) {
       auth.checkToken(jwt)
         .then((res) => {
-          handleLogin();
+          if (res)
+            handleLogin();
           history.push('/');
           setEmail(res.email);
+        })
+        .catch((err) => {
+          console.log(err);
         })
     }
   }
@@ -50,56 +56,45 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // handleTokenCheck();
-
     if (loggedIn) {
       Promise.all([api.getUserInfoApi(), api.getCards()])
-        .then(([userData, cardData]) => {
-          setCurrentUser(userData);
-          console.log(userData);
-          setCards(cardData);
+        .then(([user, cards]) => {
+          setCurrentUser(user);
+          setCards(cards);
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => console.log(`Ошибка ${err}`));
+    } else {
+      return;
     }
   }, [loggedIn]);
 
-  function handleCardDelete(card) {
-    setDeleteCard(card);
-    handleDeletePopupClick();
+  function handleLogin() {
+    setLoggedIn(true);
   }
 
-  function handleCardLike(card) {
-    const isLiked = card.likes.some(i => i._id === currentUser._id);
+  function handleEditProfileClick() {
+    setEditProfilePopupOpen(true);
+  };
 
-    api.changeLikeCardStatus(card._id, !isLiked)
-      .then((newCard) => {
-        setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+  function handleAddPlaceClick() {
+    setAddPlacePopupOpen(true);
+  };
+
+  function handleEditAvatarClick() {
+    setEditAvatarPopupOpen(true);
+  };
+
+  function handleCardClick(card) {
+    setSelectedCard(card);
+  };
 
   function handleDeletePopupClick() {
     setPopupWithDeleteOpen(true);
   }
 
-  function handleCardClick(cardItem) {
-    setSelectedCard(cardItem);
-  }
-
-  function handleEditAvatarClick() {
-    setEditAvatarPopupOpen(true);
-  }
-
-  function handleEditProfileClick() {
-    setEditProfilePopupOpen(true);
-  }
-
-  function handleAddPlaceClick() {
-    setAddPlacePopupOpen(true);
+  function handleCardDelete(card) {
+    setDeleteCard(card);
+    handleDeletePopupClick();
   }
 
   function closeAllPopups() {
@@ -111,186 +106,201 @@ function App() {
     setPopupWithDeleteOpen(false);
     setSelectedCard(null);
     setDeleteCard(null);
-  }
-
-  function handleConfirmDeleteCard() {
-    api.deleteUserCard(deleteCard._id)
-      .then(() => {
-        const newCards = cards.filter((c) => c._id !== deleteCard._id);
-        setCards(newCards);
-        closeAllPopups();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  function handleUpdateUser(user) {
-    api.editUserInfo(user)
-      .then((data) => {
-        setCurrentUser({
-          name: data.name,
-          about: data.about
-        });
-        console.log(data);
-        console.log(user);
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        closeAllPopups();
-      });
-  }
-
-  function handleUpdateAvatar(user) {
-    api.editAvatar(user)
-      .then((dataAvatar) => {
-        setCurrentUser({
-          ...currentUser,
-          avatar: dataAvatar.avatar
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        closeAllPopups();
-      });
-  }
-
-  function handleAddPlaceSubmit(item) {
-    api.createUserCard(item)
-      .then((newCard) => {
-        setCards([newCard, ...cards]);
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        closeAllPopups();
-      });
-  }
-
-  function handleLogin() {
-    setLoggedIn(true);
-  }
+  };
 
   function handleLoginSubmit(email, password) {
     auth.authorization(email, password)
       .then((res) => {
-        localStorage.setItem('jwt', res.token);
-        setEmail(email);
-        handleLogin();
-        history.push('/');
+        if (res) {
+          localStorage.setItem('jwt', res.token)
+          setEmail(email);
+          setLoggedIn(true);
+          history.replace({ pathname: "/" });
+        }
       })
       .catch((err) => {
         setInfoLoginPopupOpen(true);
-        console.log(err)
-      });
+        console.log(err);
+      })
   }
 
-  function handleRegistrSubmit(email, password) {
-    return auth.register(email, password)
-      .then((data) => {
-        setInfoPopupOpen(true);
-        setIsReg(true);
-        history.push('/signin');
+  const handleRegistrSubmit = (email, password) => {
+    auth.register(email, password)
+      .then((res) => {
+        if (res) {
+          setInfoPopupOpen(true);
+          setIsReg(true);
+          history.push("/signin");
+        }
       })
       .catch((err) => {
         console.log(err);
+      })
+      .catch(() => {
         setInfoPopupOpen(false);
         setIsReg(false);
-      });
+      })
   }
+
+  function handleUpdateUser(user) {
+    api.editUserInfo(user.name, user.about)
+      .then((userData) => {
+        setCurrentUser({
+          ...currentUser,
+          name: userData.name,
+          about: userData.about
+        });
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        closeAllPopups();
+      })
+  };
+
+  function handleUpdateAvatar(data) {
+    api.editAvatar(data)
+      .then((data) => {
+        setCurrentUser({
+          ...currentUser,
+          avatar: data.avatar
+        });
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        closeAllPopups();
+      })
+  };
+
+  function handleCardLike(card) {
+    const isLiked = card.likes.some(i => i === currentUser._id);
+    api.changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
+        setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+      })
+      .catch((err) => {
+        console.lig(err)
+      })
+  };
+
+  function handleConfirmDeleteCard() {
+    api.deleteUserCard(deleteCard._id)
+      .then(() => {
+        setCards((state) => state.filter((c) => c._id !== deleteCard._id))
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        closeAllPopups();
+      })
+  };
+
+  function handleAddPlaceSubmit(card) {
+    api.createUserCard(card)
+      .then((newCard) => {
+        setCards([newCard, ...cards]);
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        closeAllPopups();
+      })
+  };
 
   function handleExit() {
     localStorage.removeItem('jwt');
     setLoggedIn(false);
-    history.push('/signin');
+    history.push("/signin");
   }
 
   return (
-    <div className="page">
-      <CurrentUserContext.Provider value={currentUser}>
-        <Header email={email} onExit={handleExit} />
+    <CurrentUserContext.Provider value={currentUser}>
+      <div className="root">
+        <div className="page">
+          <Header email={email} exitUser={handleExit} />
 
-        <Switch>
-          <ProtectedRoute
-            exact
-            path="/"
-            loggedIn={loggedIn}
-            component={Main}
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onEditAvatar={handleEditAvatarClick}
-            onCardClick={handleCardClick}
-            cards={cards}
-            onCardLike={handleCardLike}
-            onCardDelete={handleCardDelete}
+          <Switch>
+
+            <ProtectedRoute
+              exact path="/"
+              loggedIn={loggedIn}
+              component={Main}
+              onEditProfile={handleEditProfileClick}
+              onAddPlace={handleAddPlaceClick}
+              onEditAvatar={handleEditAvatarClick}
+              onCardClick={handleCardClick}
+              onCardLike={handleCardLike}
+              onCardDelete={handleCardDelete}
+              cards={cards}
+            />
+            <Route path="/signup">
+              <Register
+                handleLogin={handleLogin}
+                onSubmit={handleRegistrSubmit}
+              />
+            </Route>
+
+            <Route path="/signin">
+              <Login
+                handleLogin={handleLogin}
+                onSubmit={handleLoginSubmit}
+              />
+            </Route>
+
+            <Footer />
+
+          </Switch>
+
+          <InfoTooltip
+            isOPen={isInfoPopupOpen}
+            onClose={closeAllPopups}
+            isReg={isReg}
+            okText='Вы успешно зарегистрировались!'
+            errText='Что-то пошло не так! Попробуйте ещё раз.'
           />
 
-          <Route path="/signin">
-            <Login
-              handleLogin={handleLogin}
-              onSubmit={handleLoginSubmit}
-            />
-          </Route>
+          <InfoTooltipLogin
+            isOPen={isInfoLoginPopupOpen}
+            onClose={closeAllPopups}
+            isLog={loggedIn}
+            errText='Что-то пошло не так! Попробуйте ещё раз.'
+          />
 
-          <Route path="/signup">
-            <Register
-              handleLogin={handleLogin}
-              onSubmit={handleRegistrSubmit}
-            />
-          </Route>
-        </Switch>
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups}
+            onUpdateUser={handleUpdateUser}
+          />
 
-        <InfoTooltip
-          isOPen={isInfoPopupOpen}
-          onClose={closeAllPopups}
-          isReg={isReg}
-          okText='Вы успешно зарегистрировались!'
-          errText='Что-то пошло не так! Попробуйте ещё раз.'
-        />
+          <AddPlacePopup
+            isOpen={isAddPlacePopupOpen}
+            onClose={closeAllPopups}
+            onAddPlace={handleAddPlaceSubmit}
+          />
 
-        <InfoTooltipLogin
-          isOPen={isInfoLoginPopupOpen}
-          onClose={closeAllPopups}
-          isLog={loggedIn}
-          errText='Что-то пошло не так! Попробуйте ещё раз.'
-        />
+          <EditAvatarPopup
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups}
+            onUpdateAvatar={handleUpdateAvatar}
+          />
 
-        {loggedIn && <Footer />}
+          <ImagePopup
+            card={selectedCard}
+            onClose={closeAllPopups}
+          />
 
-        <EditProfilePopup
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          onUpdateUser={handleUpdateUser} />
-
-        <AddPlacePopup
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onAddPlace={handleAddPlaceSubmit} />
-
-        <EditAvatarPopup
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          onUpdateAvatar={handleUpdateAvatar} />
-
-        <ImagePopup
-          card={selectedCard}
-          onClose={closeAllPopups}
-        />
-
-        <PopupWithDelete
-          isOpen={isPopupWithDeleteOpen}
-          onClose={closeAllPopups}
-          onDelete={handleConfirmDeleteCard}
-        />
-
-      </CurrentUserContext.Provider>
-    </div>
+          <PopupWithDelete
+            isOpen={isPopupWithDeleteOpen}
+            onClose={closeAllPopups}
+            onDelete={handleConfirmDeleteCard}
+          />
+        </div>
+      </div>
+    </CurrentUserContext.Provider>
   );
 }
-
-export default App;
