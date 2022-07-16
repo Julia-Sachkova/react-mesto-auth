@@ -91,7 +91,8 @@ export default class Api {
 export const api = new Api({
     baseUrl: "https://api.mesto.julia.practicum.nomoreparties.sbs",
     headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
     },
 });
 
