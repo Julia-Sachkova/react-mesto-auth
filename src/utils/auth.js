@@ -12,8 +12,7 @@ export const register = (email, password) => {
         method: "POST",
         headers: {
             "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
             email,
@@ -29,8 +28,7 @@ export const authorization = (email, password) => {
         method: "POST",
         headers: {
             "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
             email,
@@ -47,7 +45,6 @@ export const checkToken = (token) => {
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
             "Authorization": `Bearer ${token}`
         },
     })
