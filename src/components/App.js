@@ -137,8 +137,8 @@ export default function App() {
         console.log(err);
       })
       .catch(() => {
-        setInfoPopupOpen(false);
         setIsReg(false);
+        setInfoPopupOpen(true);
       })
   }
 

@@ -2,7 +2,7 @@
 export default class Api {
     constructor({ baseUrl, headers }) {
         this._url = baseUrl;
-        this.headers = headers;
+        this._headers = headers;
     }
 
     checkResOk(res) {
@@ -12,18 +12,20 @@ export default class Api {
         return Promise.reject(`Ошибка: ${res.status}`);
     }
 
-    getHeaders() {
-        const token = localStorage.getItem('jwt');
-        return {
-            'Authorization': `Bearer ${token}`,
-            ...this.headers,
-        };
-    }
+    // getHeaders() {
+    //     return {
+    //         'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+    //         ...this.headers,
+    //     };
+    // }
 
     getUserInfoApi() {
         return fetch(`${this._url}/users/me`, {
             method: 'GET',
-            headers: this.getHeaders(),
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("jwt")}`,
+                ...this._headers,
+            }
         })
             .then(this.checkResOk);
     }
@@ -31,7 +33,10 @@ export default class Api {
     editUserInfo(name, job) {
         return fetch(`${this._url}/users/me`, {
             method: 'PATCH',
-            headers: this.getHeaders(),
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("jwt")}`,
+                ...this._headers,
+            },
             body: JSON.stringify({
                 name: name,
                 about: job
@@ -43,7 +48,10 @@ export default class Api {
     editAvatar(data) {
         return fetch(`${this._url}/users/me/avatar`, {
             method: 'PATCH',
-            headers: this.getHeaders(),
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("jwt")}`,
+                ...this._headers,
+            },
             body: JSON.stringify({
                 avatar: data.avatar
             })
@@ -54,7 +62,10 @@ export default class Api {
     getCards() {
         return fetch(`${this._url}/cards`, {
             method: 'GET',
-            headers: this.getHeaders(),
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("jwt")}`,
+                ...this._headers,
+            },
         })
             .then(this.checkResOk)
     }
@@ -62,7 +73,10 @@ export default class Api {
     createUserCard(card) {
         return fetch(`${this._url}/cards`, {
             method: 'POST',
-            headers: this.getHeaders(),
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("jwt")}`,
+                ...this._headers,
+            },
             body: JSON.stringify({
                 name: card.name,
                 link: card.link
@@ -74,7 +88,10 @@ export default class Api {
     deleteUserCard(id) {
         return fetch(`${this._url}/cards/${id}`, {
             method: 'DELETE',
-            headers: this.getHeaders(),
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("jwt")}`,
+                ...this._headers,
+            },
         })
             .then(this.checkResOk)
     }
@@ -82,7 +99,10 @@ export default class Api {
     changeLikeCardStatus(id, isLiked) {
         return fetch(`${this._url}/cards/${id}/likes`, {
             method: `${isLiked ? 'PUT' : 'DELETE'}`,
-            headers: this.getHeaders(),
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("jwt")}`,
+                ...this._headers,
+            },
         })
             .then(this.checkResOk);
     }
@@ -92,7 +112,7 @@ export const api = new Api({
     baseUrl: "https://api.mesto.julia.practicum.nomoreparties.sbs",
     headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
     },
 });
 
