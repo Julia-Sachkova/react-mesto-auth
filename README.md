@@ -1,5 +1,7 @@
 # Проект: Место
 
+* Проект доступен по [ссылке](https://react-mesto-auth-seven.vercel.app/)
+
 ### Используемые технологии
 
 * JavaScript
